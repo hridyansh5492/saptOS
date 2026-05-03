@@ -1,7 +1,7 @@
 ENTRY(kernel_main)
 
 SECTIONS {
-    . = 1M;
+    . = 5M;
 
     .text : {
         *(.text)
