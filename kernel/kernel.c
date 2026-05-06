@@ -16,8 +16,8 @@ void print(char *str) {
 }
 
 void kernel_main() {
-    print("Hello World\n");
-    print("This is my OS\n");
+    print("Welcome to Sapt OS\n");
+    print("Simple Bootable Operating System\n\n");
     print("> ");
 
     while (1);
