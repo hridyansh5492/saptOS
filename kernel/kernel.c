@@ -84,18 +84,29 @@ char get_char() {
 }
 
 void kernel_main() {
+    clear_screen();
+
     print("Welcome to Sapt OS\n");
     print("> ");
 
     while (1) {
+
         char c = get_char();
 
+        // ENTER key
         if (c == '\n') {
-            print("\n> ");
+
+            print("\n");
+            print("> ");
+
         } else {
+
+            // print typed character
             char str[2];
+
             str[0] = c;
             str[1] = '\0';
+
             print(str);
         }
     }
