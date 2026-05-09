@@ -93,6 +93,7 @@ char get_char() {
             case 0x2C: c = 'z'; break;
 
             case 0x39: c = ' '; break;
+            case 0x0E: c = '\b'; break;
             case 0x1C: c = '\n'; break;
 
             default:
@@ -143,14 +144,12 @@ void kernel_main() {
 
         char c = get_char();
 
-        // ENTER pressed
+        // ENTER
         if (c == '\n') {
 
             input[index] = '\0';
 
             print("\n");
-
-            // COMMANDS
 
             if (strcmp(input, "help")) {
 
@@ -177,13 +176,33 @@ void kernel_main() {
             print("\n> ");
 
             index = 0;
+        }
 
-        } else {
+        // BACKSPACE
+        else if (c == '\b') {
 
-            // store typed character
+            if (index > 0) {
+
+                index--;
+
+                input[index] = '\0';
+
+                cursor -= 2;
+
+                char *video_memory = (char*) 0xb8000;
+
+                video_memory[cursor] = ' ';
+                video_memory[cursor + 1] = 0x07;
+
+                update_cursor();
+            }
+        }
+
+        // NORMAL CHARACTER
+        else {
+
             input[index++] = c;
 
-            // echo character
             char str[2];
 
             str[0] = c;
