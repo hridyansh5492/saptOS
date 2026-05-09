@@ -134,6 +134,17 @@ char get_char() {
             case 0x15: c = 'y'; break;
             case 0x2C: c = 'z'; break;
 
+            case 0x0B: c = '0'; break;
+            case 0x02: c = '1'; break;
+            case 0x03: c = '2'; break;
+            case 0x04: c = '3'; break;
+            case 0x05: c = '4'; break;
+            case 0x06: c = '5'; break;
+            case 0x07: c = '6'; break;
+            case 0x08: c = '7'; break;
+            case 0x09: c = '8'; break;
+            case 0x0A: c = '9'; break;
+
             case 0x39: c = ' '; break;
             case 0x0E: c = '\b'; break;
             case 0x1C: c = '\n'; break;
@@ -268,6 +279,10 @@ int atoi(char str[], int start) {
 
     int num = 0;
 
+    // skip spaces
+    while (str[start] == ' ')
+        start++;
+
     while (str[start] >= '0' && str[start] <= '9') {
 
         num = num * 10 + (str[start] - '0');
@@ -333,7 +348,11 @@ void kernel_main() {
                 print("help  - show commands\n");
                 print("clear - clear screen\n");
                 print("info  - OS information\n");
-                print("calc  - simple calculator calc <operand1> <operator> <operand2> (e.g. calc 5 + 3)\n");
+                print("add  - addition       (e.g. add 5 3)\n");
+                print("sub  - subtraction    (e.g. sub 5 3)\n");
+                print("mul  - multiplication (e.g. mul 5 3)\n");
+                print("div  - division       (e.g. div 6 2)\n");
+                print("rem  - remainder      (e.g. rem 10 3)\n");
                 print("history - show command history\n");
                 print("time - show system uptime\n");
                 print("shutdown - shut down the system\n");
@@ -348,39 +367,50 @@ void kernel_main() {
 
                 clear_screen();
 
-            } else if (starts_with(input, "calc")) {
+            } else if (
+                starts_with(input, "add") ||
+                starts_with(input, "sub") ||
+                starts_with(input, "mul") ||
+                starts_with(input, "div") ||
+                starts_with(input, "rem")
+            ) {
 
-                int num1 = atoi(input, 5);
+                int num1 = atoi(input, 4);
 
-                int i = 5;
+                int i = 4;
 
-                // move to operator
                 while (input[i] != ' ')
                     i++;
 
                 i++;
 
-                char op = input[i];
-
-                i += 2;
-
                 int num2 = atoi(input, i);
 
                 int result = 0;
 
-                if (op == '+') {
+                // ADD
+                if (starts_with(input, "add")) {
 
                     result = num1 + num2;
 
-                } else if (op == '-') {
+                }
+
+                // SUB
+                else if (starts_with(input, "sub")) {
 
                     result = num1 - num2;
 
-                } else if (op == '*') {
+                }
+
+                // MUL
+                else if (starts_with(input, "mul")) {
 
                     result = num1 * num2;
 
-                } else if (op == '/') {
+                }
+
+                // DIV
+                else if (starts_with(input, "div")) {
 
                     if (num2 == 0) {
 
@@ -392,16 +422,12 @@ void kernel_main() {
 
                     result = num1 / num2;
 
-                } else if (op == '%') {
+                }
+
+                // REM
+                else if (starts_with(input, "rem")) {
 
                     result = num1 % num2;
-
-                } else {
-
-                    print("Invalid operator\n");
-                    print("\n> ");
-                    index = 0;
-                    continue;
                 }
 
                 set_color(0x0E);
