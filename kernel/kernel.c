@@ -1,5 +1,7 @@
 int cursor = 0;
 
+unsigned char text_color = 0x07;
+
 void clear_screen() {
     char *video_memory = (char*) 0xb8000;
 
@@ -36,7 +38,7 @@ void print(char *str) {
             cursor = (cursor / 160 + 1) * 160;
         } else {
             video_memory[cursor++] = str[i];
-            video_memory[cursor++] = 0x07;
+            video_memory[cursor++] = text_color;
         }
     }
     update_cursor();
@@ -129,12 +131,19 @@ int strcmp(char str1[], char str2[]) {
     return str1[i] == str2[i];
 }
 
+void set_color(unsigned char color) {
+    text_color = color;
+}
+
 void kernel_main() {
 
     clear_screen();
 
+    set_color(0x0A);
     print("Welcome to Sapt OS\n");
+    set_color(0x0F);
     print("Type 'help' for commands\n\n");
+    set_color(0x0F);
     print("> ");
 
     char input[100];
