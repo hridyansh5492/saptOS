@@ -76,15 +76,18 @@ char get_char() {
 
 void kernel_main() {
     print("Welcome to Sapt OS\n");
-    print("Before clear...\n");
-
-    // delay loop (just for demo)
-    for (int i = 0; i < 100000000; i++);
-
-    clear_screen();
-
-    print("Screen Cleared!\n");
     print("> ");
 
-    while (1);
+    while (1) {
+        char c = get_char();
+
+        if (c == '\n') {
+            print("\n> ");
+        } else {
+            char str[2];
+            str[0] = c;
+            str[1] = '\0';
+            print(str);
+        }
+    }
 }
