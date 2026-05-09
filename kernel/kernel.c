@@ -83,6 +83,21 @@ char get_char() {
     }
 }
 
+static inline void outb(unsigned short port, unsigned char value) {
+    __asm__ volatile ("outb %0, %1" : : "a"(value), "Nd"(port));
+}
+
+void update_cursor() {
+
+    unsigned short position = cursor / 2;
+
+    outb(0x3D4, 14);
+    outb(0x3D5, position >> 8);
+
+    outb(0x3D4, 15);
+    outb(0x3D5, position);
+}
+
 void kernel_main() {
     clear_screen();
 
@@ -98,6 +113,7 @@ void kernel_main() {
 
             print("\n");
             print("> ");
+            update_cursor();
 
         } else {
 
@@ -108,6 +124,7 @@ void kernel_main() {
             str[1] = '\0';
 
             print(str);
+            update_cursor();
         }
     }
 }
