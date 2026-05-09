@@ -32,18 +32,32 @@ void update_cursor() {
 }
 
 void print(char *str) {
+
     char *video_memory = (char*) 0xb8000;
 
     for (int i = 0; str[i] != '\0'; i++) {
 
         if (str[i] == '\n') {
-            // move cursor to next line
+
             cursor = (cursor / 160 + 1) * 160;
+
+            // scroll if screen full
+            if (cursor >= 80 * 25 * 2) {
+                scroll();
+            }
+
         } else {
+
             video_memory[cursor++] = str[i];
             video_memory[cursor++] = text_color;
+
+            // scroll if screen full
+            if (cursor >= 80 * 25 * 2) {
+                scroll();
+            }
         }
     }
+
     update_cursor();
 }
 
@@ -179,6 +193,27 @@ void strcpy(char dest[], char src[]) {
     dest[i] = '\0';
 }
 
+void scroll() {
+
+    char *video_memory = (char*) 0xb8000;
+
+    // move all lines one row up
+    for (int i = 0; i < 24 * 80 * 2; i++) {
+
+        video_memory[i] = video_memory[i + 160];
+    }
+
+    // clear last line
+    for (int i = 24 * 160; i < 25 * 160; i += 2) {
+
+        video_memory[i] = ' ';
+        video_memory[i + 1] = text_color;
+    }
+
+    // move cursor to last line
+    cursor = 24 * 160;
+}
+
 void kernel_main() {
 
     clear_screen();
@@ -218,7 +253,7 @@ void kernel_main() {
         if (c == '\n') {
 
             input[index] = '\0';
-            
+
             if (history_count < 10) {
                 strcpy(history[history_count], input);
                 history_count++;
