@@ -140,6 +140,22 @@ void delay() {
     for (int i = 0; i < 100000000; i++);
 }
 
+void show_banner() {
+
+    set_color(0x0A);
+
+    print("   _____             _      ____   _____ \n");
+    print("  / ____|           | |    / __ \\ / ____|\n");
+    print(" | (___   __ _ _ __ | |_  | |  | | (___  \n");
+    print("  \\___ \\ / _` | '_ \\| __| | |  | |\\___ \\ \n");
+    print("  ____) | (_| | |_) | |_  | |__| |____) |\n");
+    print(" |_____/ \\__,_| .__/ \\__|  \\____/|_____/ \n");
+    print("              | |                        \n");
+    print("              |_|                        \n\n");
+
+    set_color(0x0F);
+}
+
 void kernel_main() {
 
     clear_screen();
@@ -158,6 +174,8 @@ void kernel_main() {
     set_color(0x0F);
     print("Done.\n\n");
     delay();
+
+    show_banner();
 
     set_color(0x0A);
     print("Welcome to Sapt OS\n");
