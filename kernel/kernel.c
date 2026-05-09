@@ -1,9 +1,14 @@
 int cursor = 0;
 
-static inline unsigned char inb(unsigned short port) {
-    unsigned char result;
-    __asm__ volatile ("inb %1, %0" : "=a"(result) : "Nd"(port));
-    return result;
+void clear_screen() {
+    char *video_memory = (char*) 0xb8000;
+
+    for (int i = 0; i < 80 * 25 * 2; i += 2) {
+        video_memory[i] = ' ';      // empty character
+        video_memory[i + 1] = 0x07; // color
+    }
+
+    cursor = 0; // reset cursor to top
 }
 
 static inline void outb(unsigned short port, unsigned char value) {
@@ -21,91 +26,89 @@ void update_cursor() {
     outb(0x3D5, position);
 }
 
-void clear_screen() {
-
-    char *video_memory = (char*) 0xb8000;
-
-    for (int i = 0; i < 80 * 25 * 2; i += 2) {
-
-        video_memory[i] = ' ';
-        video_memory[i + 1] = 0x07;
-    }
-
-    cursor = 0;
-
-    update_cursor();
-}
-
 void print(char *str) {
-
     char *video_memory = (char*) 0xb8000;
 
     for (int i = 0; str[i] != '\0'; i++) {
 
         if (str[i] == '\n') {
-
+            // move cursor to next line
             cursor = (cursor / 160 + 1) * 160;
-
         } else {
-
             video_memory[cursor++] = str[i];
             video_memory[cursor++] = 0x07;
         }
     }
-
     update_cursor();
+}
+
+static inline unsigned char inb(unsigned short port) {
+    unsigned char result;
+    __asm__ volatile ("inb %1, %0" : "=a"(result) : "Nd"(port));
+    return result;
 }
 
 char get_char() {
 
-    unsigned char scancode = 0;
+    unsigned char scancode;
 
     while (1) {
 
-        unsigned char new_scancode = inb(0x60);
+        // wait for key press
+        scancode = inb(0x60);
 
-        // detect NEW key press only
-        if (new_scancode != scancode) {
+        // ignore releases
+        if (scancode & 0x80)
+            continue;
 
-            scancode = new_scancode;
+        char c = 0;
 
-            // ignore releases
-            if (scancode & 0x80)
+        switch (scancode) {
+
+            case 0x1E: c = 'a'; break;
+            case 0x30: c = 'b'; break;
+            case 0x2E: c = 'c'; break;
+            case 0x20: c = 'd'; break;
+            case 0x12: c = 'e'; break;
+            case 0x21: c = 'f'; break;
+            case 0x22: c = 'g'; break;
+            case 0x23: c = 'h'; break;
+            case 0x17: c = 'i'; break;
+            case 0x24: c = 'j'; break;
+            case 0x25: c = 'k'; break;
+            case 0x26: c = 'l'; break;
+            case 0x32: c = 'm'; break;
+            case 0x31: c = 'n'; break;
+            case 0x18: c = 'o'; break;
+            case 0x19: c = 'p'; break;
+            case 0x10: c = 'q'; break;
+            case 0x13: c = 'r'; break;
+            case 0x1F: c = 's'; break;
+            case 0x14: c = 't'; break;
+            case 0x16: c = 'u'; break;
+            case 0x2F: c = 'v'; break;
+            case 0x11: c = 'w'; break;
+            case 0x2D: c = 'x'; break;
+            case 0x15: c = 'y'; break;
+            case 0x2C: c = 'z'; break;
+
+            case 0x39: c = ' '; break;
+            case 0x1C: c = '\n'; break;
+
+            default:
                 continue;
-
-            switch (scancode) {
-
-                case 0x1E: return 'a';
-                case 0x30: return 'b';
-                case 0x2E: return 'c';
-                case 0x20: return 'd';
-                case 0x12: return 'e';
-                case 0x21: return 'f';
-                case 0x22: return 'g';
-                case 0x23: return 'h';
-                case 0x17: return 'i';
-                case 0x24: return 'j';
-                case 0x25: return 'k';
-                case 0x26: return 'l';
-                case 0x32: return 'm';
-                case 0x31: return 'n';
-                case 0x18: return 'o';
-                case 0x19: return 'p';
-                case 0x10: return 'q';
-                case 0x13: return 'r';
-                case 0x1F: return 's';
-                case 0x14: return 't';
-                case 0x16: return 'u';
-                case 0x2F: return 'v';
-                case 0x11: return 'w';
-                case 0x2D: return 'x';
-                case 0x15: return 'y';
-                case 0x2C: return 'z';
-
-                case 0x39: return ' ';
-                case 0x1C: return '\n';
-            }
         }
+
+        // WAIT FOR KEY RELEASE
+        while (1) {
+
+            unsigned char release = inb(0x60);
+
+            if (release == (scancode | 0x80))
+                break;
+        }
+
+        return c;
     }
 }
 
@@ -116,16 +119,30 @@ void kernel_main() {
     print("Welcome to Sapt OS\n");
     print("> ");
 
+    char input[100];
+    int index = 0;
+
     while (1) {
 
         char c = get_char();
 
+        // ENTER key
         if (c == '\n') {
 
+            input[index] = '\0';
+
+            print("\n");
+            print(input);
             print("\n> ");
+
+            index = 0;
 
         } else {
 
+            // store character
+            input[index++] = c;
+
+            // echo while typing
             char str[2];
 
             str[0] = c;
