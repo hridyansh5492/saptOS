@@ -5,6 +5,8 @@ unsigned char text_color = 0x07;
 char history[10][100];
 int history_count = 0;
 
+int ticks = 0;
+
 void clear_screen() {
     char *video_memory = (char*) 0xb8000;
 
@@ -29,6 +31,27 @@ void update_cursor() {
 
     outb(0x3D4, 15);
     outb(0x3D5, position);
+}
+
+void scroll() {
+
+    char *video_memory = (char*) 0xb8000;
+
+    // move all lines one row up
+    for (int i = 0; i < 24 * 80 * 2; i++) {
+
+        video_memory[i] = video_memory[i + 160];
+    }
+
+    // clear last line
+    for (int i = 24 * 160; i < 25 * 160; i += 2) {
+
+        video_memory[i] = ' ';
+        video_memory[i + 1] = text_color;
+    }
+
+    // move cursor to last line
+    cursor = 24 * 160;
 }
 
 void print(char *str) {
@@ -193,25 +216,66 @@ void strcpy(char dest[], char src[]) {
     dest[i] = '\0';
 }
 
-void scroll() {
 
-    char *video_memory = (char*) 0xb8000;
 
-    // move all lines one row up
-    for (int i = 0; i < 24 * 80 * 2; i++) {
+void print_int(int num) {
 
-        video_memory[i] = video_memory[i + 160];
+    char buffer[10];
+    int i = 0;
+
+    // special case
+    if (num == 0) {
+        print("0");
+        return;
     }
 
-    // clear last line
-    for (int i = 24 * 160; i < 25 * 160; i += 2) {
+    // convert number to string
+    while (num > 0) {
 
-        video_memory[i] = ' ';
-        video_memory[i + 1] = text_color;
+        buffer[i++] = (num % 10) + '0';
+        num /= 10;
     }
 
-    // move cursor to last line
-    cursor = 24 * 160;
+    // print in reverse
+    for (int j = i - 1; j >= 0; j--) {
+
+        char str[2];
+
+        str[0] = buffer[j];
+        str[1] = '\0';
+
+        print(str);
+    }
+}
+
+int starts_with(char str[], char prefix[]) {
+
+    int i = 0;
+
+    while (prefix[i] != '\0') {
+
+        if (str[i] != prefix[i]) {
+            return 0;
+        }
+
+        i++;
+    }
+
+    return 1;
+}
+
+int atoi(char str[], int start) {
+
+    int num = 0;
+
+    while (str[start] >= '0' && str[start] <= '9') {
+
+        num = num * 10 + (str[start] - '0');
+
+        start++;
+    }
+
+    return num;
 }
 
 void kernel_main() {
@@ -246,6 +310,8 @@ void kernel_main() {
     int index = 0;
 
     while (1) {
+        
+        ticks++;
 
         char c = get_char();
 
@@ -267,7 +333,9 @@ void kernel_main() {
                 print("help  - show commands\n");
                 print("clear - clear screen\n");
                 print("info  - OS information\n");
+                print("calc  - simple calculator calc <operand1> <operator> <operand2> (e.g. calc 5 + 3)\n");
                 print("history - show command history\n");
+                print("time - show system uptime\n");
                 print("shutdown - shut down the system\n");
 
             } else if (strcmp(input, "info")) {
@@ -280,6 +348,71 @@ void kernel_main() {
 
                 clear_screen();
 
+            } else if (starts_with(input, "calc")) {
+
+                int num1 = atoi(input, 5);
+
+                int i = 5;
+
+                // move to operator
+                while (input[i] != ' ')
+                    i++;
+
+                i++;
+
+                char op = input[i];
+
+                i += 2;
+
+                int num2 = atoi(input, i);
+
+                int result = 0;
+
+                if (op == '+') {
+
+                    result = num1 + num2;
+
+                } else if (op == '-') {
+
+                    result = num1 - num2;
+
+                } else if (op == '*') {
+
+                    result = num1 * num2;
+
+                } else if (op == '/') {
+
+                    if (num2 == 0) {
+
+                        print("Division by zero error\n");
+                        print("\n> ");
+                        index = 0;
+                        continue;
+                    }
+
+                    result = num1 / num2;
+
+                } else if (op == '%') {
+
+                    result = num1 % num2;
+
+                } else {
+
+                    print("Invalid operator\n");
+                    print("\n> ");
+                    index = 0;
+                    continue;
+                }
+
+                set_color(0x0E);
+
+                print("Result: ");
+
+                print_int(result);
+
+                print("\n");
+
+                set_color(0x0F);
             } else if (strcmp(input, "history")) {
 
                 print("Command History:\n");
@@ -289,6 +422,15 @@ void kernel_main() {
                     print(history[i]);
                     print("\n");
                 }
+            } else if (strcmp(input, "time")) {
+
+                set_color(0x0E);
+                print("System uptime: ");
+
+                print_int(ticks);
+                print(" ticks\n");
+                set_color(0x0F);
+
             } else if (strcmp(input, "shutdown")) {
 
                 set_color(0x0C);
@@ -297,7 +439,6 @@ void kernel_main() {
                 print("System Halted.");
 
                 halt();
-                outb(0x604, 0x2000);  // shutdown QEMU
             } else {
 
                 print("Unknown command\n");
