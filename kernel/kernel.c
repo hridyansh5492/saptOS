@@ -26,6 +26,14 @@ void print(char *str) {
     }
 }
 
+static inline unsigned char inb(unsigned short port) {
+    unsigned char result;
+    __asm__ volatile ("inb %1, %0" : "=a"(result) : "Nd"(port));
+    return result;
+}
+
+
+
 void kernel_main() {
     print("Welcome to Sapt OS\n");
     print("Before clear...\n");
