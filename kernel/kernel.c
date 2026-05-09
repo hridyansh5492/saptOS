@@ -95,6 +95,7 @@ void update_cursor() {
 }
 
 void kernel_main() {
+
     clear_screen();
 
     print("Welcome to Sapt OS\n");
@@ -104,16 +105,13 @@ void kernel_main() {
 
         char c = get_char();
 
-        // ENTER key
         if (c == '\n') {
 
-            print("\n");
-            print("> ");
+            print("\n> ");
             update_cursor();
 
         } else {
 
-            // print typed character
             char str[2];
 
             str[0] = c;
