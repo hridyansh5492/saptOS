@@ -112,11 +112,28 @@ char get_char() {
     }
 }
 
+int strcmp(char str1[], char str2[]) {
+
+    int i = 0;
+
+    while (str1[i] != '\0' && str2[i] != '\0') {
+
+        if (str1[i] != str2[i]) {
+            return 0;
+        }
+
+        i++;
+    }
+
+    return str1[i] == str2[i];
+}
+
 void kernel_main() {
 
     clear_screen();
 
     print("Welcome to Sapt OS\n");
+    print("Type 'help' for commands\n\n");
     print("> ");
 
     char input[100];
@@ -126,23 +143,47 @@ void kernel_main() {
 
         char c = get_char();
 
-        // ENTER key
+        // ENTER pressed
         if (c == '\n') {
 
             input[index] = '\0';
 
             print("\n");
-            print(input);
+
+            // COMMANDS
+
+            if (strcmp(input, "help")) {
+
+                print("Commands:\n");
+                print("help  - show commands\n");
+                print("clear - clear screen\n");
+                print("info  - OS information\n");
+
+            } else if (strcmp(input, "info")) {
+
+                print("Sapt OS v1.0\n");
+                print("Basic Bootable Operating System\n");
+                print("Made by Hridyansh\n");
+
+            } else if (strcmp(input, "clear")) {
+
+                clear_screen();
+
+            } else {
+
+                print("Unknown command\n");
+            }
+
             print("\n> ");
 
             index = 0;
 
         } else {
 
-            // store character
+            // store typed character
             input[index++] = c;
 
-            // echo while typing
+            // echo character
             char str[2];
 
             str[0] = c;
