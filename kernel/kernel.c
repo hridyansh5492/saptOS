@@ -2,6 +2,9 @@ int cursor = 0;
 
 unsigned char text_color = 0x07;
 
+char history[10][100];
+int history_count = 0;
+
 void clear_screen() {
     char *video_memory = (char*) 0xb8000;
 
@@ -163,6 +166,19 @@ void halt() {
     }
 }
 
+void strcpy(char dest[], char src[]) {
+
+    int i = 0;
+
+    while (src[i] != '\0') {
+
+        dest[i] = src[i];
+        i++;
+    }
+
+    dest[i] = '\0';
+}
+
 void kernel_main() {
 
     clear_screen();
@@ -202,6 +218,11 @@ void kernel_main() {
         if (c == '\n') {
 
             input[index] = '\0';
+            
+            if (history_count < 10) {
+                strcpy(history[history_count], input);
+                history_count++;
+            }
 
             print("\n");
 
@@ -211,6 +232,7 @@ void kernel_main() {
                 print("help  - show commands\n");
                 print("clear - clear screen\n");
                 print("info  - OS information\n");
+                print("history - show command history\n");
                 print("shutdown - shut down the system\n");
 
             } else if (strcmp(input, "info")) {
@@ -223,6 +245,15 @@ void kernel_main() {
 
                 clear_screen();
 
+            } else if (strcmp(input, "history")) {
+
+                print("Command History:\n");
+
+                for (int i = 0; i < history_count; i++) {
+
+                    print(history[i]);
+                    print("\n");
+                }
             } else if (strcmp(input, "shutdown")) {
 
                 set_color(0x0C);
