@@ -156,6 +156,13 @@ void show_banner() {
     set_color(0x0F);
 }
 
+void halt() {
+
+    while (1) {
+        __asm__ volatile ("hlt");
+    }
+}
+
 void kernel_main() {
 
     clear_screen();
@@ -204,6 +211,7 @@ void kernel_main() {
                 print("help  - show commands\n");
                 print("clear - clear screen\n");
                 print("info  - OS information\n");
+                print("shutdown - shut down the system\n");
 
             } else if (strcmp(input, "info")) {
 
@@ -215,6 +223,15 @@ void kernel_main() {
 
                 clear_screen();
 
+            } else if (strcmp(input, "shutdown")) {
+
+                set_color(0x0C);
+
+                print("Shutting down Sapt OS...\n");
+                print("System Halted.");
+
+                halt();
+                outb(0x604, 0x2000);  // shutdown QEMU
             } else {
 
                 print("Unknown command\n");
