@@ -36,41 +36,50 @@ char get_char() {
     unsigned char scancode;
 
     while (1) {
+
         scancode = inb(0x60);
 
-        // ignore key release
-        if (scancode & 0x80) continue;
+        // Ignore key release codes
+        if (scancode & 0x80)
+            continue;
+
+        char c = 0;
 
         switch (scancode) {
-            case 0x1E: return 'a';
-            case 0x30: return 'b';
-            case 0x2E: return 'c';
-            case 0x20: return 'd';
-            case 0x12: return 'e';
-            case 0x21: return 'f';
-            case 0x22: return 'g';
-            case 0x23: return 'h';
-            case 0x17: return 'i';
-            case 0x24: return 'j';
-            case 0x25: return 'k';
-            case 0x26: return 'l';
-            case 0x32: return 'm';
-            case 0x31: return 'n';
-            case 0x18: return 'o';
-            case 0x19: return 'p';
-            case 0x10: return 'q';
-            case 0x13: return 'r';
-            case 0x1F: return 's';
-            case 0x14: return 't';
-            case 0x16: return 'u';
-            case 0x2F: return 'v';
-            case 0x11: return 'w';
-            case 0x2D: return 'x';
-            case 0x15: return 'y';
-            case 0x2C: return 'z';
-            case 0x39: return ' ';
-            case 0x1C: return '\n';
+            case 0x1E: c = 'a'; break;
+            case 0x30: c = 'b'; break;
+            case 0x2E: c = 'c'; break;
+            case 0x20: c = 'd'; break;
+            case 0x12: c = 'e'; break;
+            case 0x21: c = 'f'; break;
+            case 0x22: c = 'g'; break;
+            case 0x23: c = 'h'; break;
+            case 0x17: c = 'i'; break;
+            case 0x24: c = 'j'; break;
+            case 0x25: c = 'k'; break;
+            case 0x26: c = 'l'; break;
+            case 0x32: c = 'm'; break;
+            case 0x31: c = 'n'; break;
+            case 0x18: c = 'o'; break;
+            case 0x19: c = 'p'; break;
+            case 0x10: c = 'q'; break;
+            case 0x13: c = 'r'; break;
+            case 0x1F: c = 's'; break;
+            case 0x14: c = 't'; break;
+            case 0x16: c = 'u'; break;
+            case 0x2F: c = 'v'; break;
+            case 0x11: c = 'w'; break;
+            case 0x2D: c = 'x'; break;
+            case 0x15: c = 'y'; break;
+            case 0x2C: c = 'z'; break;
+            case 0x39: c = ' '; break;
+            case 0x1C: c = '\n'; break;
         }
+
+        // wait until key release
+        while (!(inb(0x60) & 0x80));
+
+        return c;
     }
 }
 
