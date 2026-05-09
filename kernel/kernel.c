@@ -135,9 +135,29 @@ void set_color(unsigned char color) {
     text_color = color;
 }
 
+void delay() {
+
+    for (int i = 0; i < 100000000; i++);
+}
+
 void kernel_main() {
 
     clear_screen();
+
+    set_color(0x0A);
+    print("Starting Sapt OS...\n");
+    delay();
+
+    set_color(0x0E);
+    print("Loading modules...\n");
+    delay();
+
+    print("Initializing kernel...\n");
+    delay();
+
+    set_color(0x0F);
+    print("Done.\n\n");
+    delay();
 
     set_color(0x0A);
     print("Welcome to Sapt OS\n");
