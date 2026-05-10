@@ -195,14 +195,14 @@ void show_banner() {
 
     set_color(0x0A);
 
-    print("   _____             _      ____   _____ \n");
-    print("  / ____|           | |    / __ \\ / ____|\n");
-    print(" | (___   __ _ _ __ | |_  | |  | | (___  \n");
-    print("  \\___ \\ / _` | '_ \\| __| | |  | |\\___ \\ \n");
-    print("  ____) | (_| | |_) | |_  | |__| |____) |\n");
-    print(" |_____/ \\__,_| .__/ \\__|  \\____/|_____/ \n");
-    print("              | |                        \n");
-    print("              |_|                        \n\n");
+    print("   _____             _     ______ \n");
+    print("  / ____|           | |   |____  |\n");
+    print(" | (___   __ _ _ __ | |_      / / \n");
+    print("  \\___ \\ / _` | '_ \\| __|    / /  \n");
+    print("  ____) | (_| | |_) | |_    / /   \n");
+    print(" |_____/ \\__,_| .__/ \\__|  /_/    \n");
+    print("              | |                 \n");
+    print("              |_|                 \n\n");
 
     set_color(0x0F);
 }
@@ -298,7 +298,7 @@ void kernel_main() {
     clear_screen();
 
     set_color(0x0A);
-    print("Starting Sapt OS...\n");
+    print("Starting Sapt 7...\n");
     delay();
 
     set_color(0x0E);
@@ -315,7 +315,7 @@ void kernel_main() {
     show_banner();
 
     set_color(0x0A);
-    print("Welcome to Sapt OS\n");
+    print("Welcome to Sapt 7\n");
     set_color(0x0F);
     print("Type 'help' for commands\n\n");
     set_color(0x0F);
@@ -359,7 +359,7 @@ void kernel_main() {
 
             } else if (strcmp(input, "info")) {
 
-                print("Sapt OS v1.0\n");
+                print("Sapt 7 v1.0\n");
                 print("Basic Bootable Operating System\n");
                 print("Made by Hridyansh\n");
 
@@ -461,7 +461,7 @@ void kernel_main() {
 
                 set_color(0x0C);
 
-                print("Shutting down Sapt OS...\n");
+                print("Shutting down Sapt 7...\n");
                 print("System Halted.");
 
                 halt();

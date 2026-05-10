@@ -6,5 +6,5 @@ run:
 	gcc -m32 -ffreestanding -c kernel/kernel.c -o kernel.o
 	ld -m elf_i386 -T linker.ld -o kernel.bin boot.o kernel.o
 	cp kernel.bin iso/boot/
-	grub-mkrescue -o sapt.iso iso
-	qemu-system-x86_64 -cdrom sapt.iso
+	grub-mkrescue -o sapt_7_v1.0.iso iso
+	qemu-system-x86_64 -cdrom sapt_7_v1.0.iso
