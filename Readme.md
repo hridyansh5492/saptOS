@@ -1,4 +1,4 @@
-# Sapt OS v1.0
+# Sapt 7 v1.0
 
 A basic bootable operating system developed using **C** and **x86 Assembly** for educational and learning purposes.
 
@@ -6,19 +6,19 @@ A basic bootable operating system developed using **C** and **x86 Assembly** for
 
 ## 📖 Description
 
-Sapt OS is a mini operating system project created to understand how operating systems work internally — from the boot process to kernel execution and hardware-level screen and keyboard interaction.
+Sapt 7 is a mini operating system project created to understand how operating systems work internally — from the boot process to kernel execution and hardware-level screen and keyboard interaction.
 
 This project helped in learning:
 
-* How bootloaders work
+* Bootloader fundamentals
 * Kernel development basics
 * VGA text mode programming
 * Keyboard input handling
 * Memory-level screen output
-* Command-line interfaces
-* Basic shell functionality
+* Command-line interface design
+* Low-level system programming
 
-Sapt OS boots using **GRUB**, loads a custom kernel, and runs inside **QEMU Emulator**.
+Sapt 7 boots using **GRUB**, loads a custom kernel, and runs inside the **QEMU Emulator**.
 
 ---
 
@@ -30,7 +30,7 @@ Sapt OS boots using **GRUB**, loads a custom kernel, and runs inside **QEMU Emul
 * GRUB Bootloader Integration
 * Custom Kernel in C and Assembly
 * VGA Text Mode Output
-* Custom Print Function
+* Dynamic Screen Printing
 * Screen Clearing Support
 * Cursor Management
 
@@ -65,6 +65,7 @@ Example:
 ```bash
 add 10 5
 mul 6 7
+div 20 4
 ```
 
 ### UI Features
@@ -149,7 +150,7 @@ shutdown
 
 ## 🎯 Purpose of the Project
 
-This project was built as a semester mini project and learning experiment to understand low-level system programming and operating system fundamentals.
+This project was developed as a semester mini project and learning experiment to understand low-level system programming and operating system fundamentals.
 
 ---
 
